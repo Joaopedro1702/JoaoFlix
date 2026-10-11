@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JoãoFlix · Entrar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style/tema.css">
+<script type="module" src="/login.js" defer></script>
+
+<style>
+body{display:grid;place-items:center;padding:90px 4% 40px}
+header{position:fixed;top:0;left:0;right:0;padding:14px 4%}
+
+.painel{width:min(440px,100%);padding:clamp(28px,5vw,48px);border-radius:18px;
+        background:#000000b3;border:1px solid #ffffff1f;backdrop-filter:blur(8px);
+        animation:pop .3s ease}
+@keyframes pop{from{opacity:0;transform:translateY(16px)}}
+h1{font:900 clamp(48px,7vw,68px)/.9 var(--display);text-transform:uppercase;margin-bottom:26px;
+   background:linear-gradient(180deg,#fff 8%,#bdbdbd 55%,#6a6a6a 105%);
+   -webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* campo com rótulo flutuante: o placeholder=" " permite detectar "vazio" via CSS */
+.campo{position:relative;margin-bottom:14px}
+.campo input{width:100%;padding:23px 48px 8px 16px;border-radius:12px;font:inherit;
+             color:var(--sand);background:#ffffff14;border:1px solid #ffffff33;
+             transition:border-color .2s,background .2s}
+.campo input:focus{outline:none;border-color:#fff;background:#ffffff1f}
+.campo label{position:absolute;left:16px;top:15px;opacity:.65;pointer-events:none;
+             transition:top .15s,font-size .15s}
+.campo input:focus+label,.campo input:not(:placeholder-shown)+label{top:6px;font-size:12px}
+.olho{position:absolute;right:6px;top:6px;width:42px;height:42px;border:0;border-radius:50%;
+      background:none;opacity:.7}
+.olho:hover{opacity:1;background:#ffffff1f}
+
+#erro{min-height:22px;margin:2px 0 12px;font-size:14px;font-weight:600;color:#fff}
+#erro:not(:empty)::before{content:"⚠ "}
+
+.btn{width:100%;border:0;border-radius:99px;padding:15px 32px;font-weight:800;font-size:17px;
+     background:var(--sand);color:var(--night);transition:background .2s,transform .2s}
+.btn:hover{background:#fff} .btn:active{transform:scale(.97)}
+.btn[disabled]{opacity:.6;cursor:progress}
+
+.linha{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:16px 0 0;font-size:14px}
+.linha label{display:flex;align-items:center;gap:8px;opacity:.8;cursor:pointer}
+.linha input{accent-color:#fff;width:16px;height:16px}
+.link{background:none;border:0;padding:4px 0;font-weight:800;text-decoration:underline;text-underline-offset:3px;opacity:.85}
+.link:hover{opacity:1}
+.troca{margin-top:28px;opacity:.8;font-size:15px}
+
+/* TV / controle remoto */
+.tv .painel{zoom:1.3} .tv *{cursor:none;backdrop-filter:none!important}
+.kb .btn:focus,.kb .link:focus,.kb .olho:focus{outline:4px solid var(--teal)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header><span class="logo">JOÃOFLIX</span></header>
+
+<main class="painel">
+  <h1 id="titulo">Entrar</h1>
+
+  <form id="f" novalidate>
+    <div class="campo">
+      <input id="email" type="email" placeholder=" " autocomplete="email" inputmode="email" required>
+      <label for="email">E-mail</label>
+    </div>
+    <div class="campo">
+      <input id="senha" type="password" placeholder=" " autocomplete="current-password" required>
+      <label for="senha">Senha</label>
+      <button type="button" class="olho" id="olho" aria-label="Mostrar senha" aria-pressed="false">👁</button>
+    </div>
+
+    <p id="erro" role="alert" aria-live="assertive"></p>
+    <button class="btn" id="ok" type="submit">Entrar</button>
+
+    <div class="linha">
+      <label><input id="manter" type="checkbox" checked> Manter conectado</label>
+      <button type="button" class="link" id="esqueci">Esqueci a senha</button>
+    </div>
+  </form>
+
+  <p class="troca">
+    <span id="pergunta">Novo por aqui?</span>
+    <button type="button" class="link" id="troca">Criar conta</button>
+  </p>
+</main>
+</body>
+</html>

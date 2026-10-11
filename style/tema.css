@@ -1,0 +1,31 @@
+:root{
+  --night:#000;--plum:#111;--pink:#d9d9d9;--orange:#9a9a9a;--gold:#fff;--teal:#fff;--sand:#f2f2f2;
+  --sun:linear-gradient(180deg,#fff,#9a9a9a 55%,#4a4a4a);
+  --display:"Big Shoulders Display",Impact,"Arial Narrow",sans-serif;
+  --body:Manrope,system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+body{
+  background:radial-gradient(1100px 600px at 80% -10%,#ffffff22,transparent 60%) fixed,#000;
+  color:var(--sand);
+  font:400 16px/1.5 var(--body);
+  min-height:100vh;
+}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
+
+.logo{
+  font:900 35px/1 var(--display);
+  letter-spacing:.05em;
+  background:var(--sun);
+  -webkit-background-clip:text;background-clip:text;
+  color:transparent;
+}
+
+/* o autofill do Chrome pinta o campo de branco/amarelo; isto mantém o tema escuro */
+input:-webkit-autofill{
+  -webkit-box-shadow:0 0 0 100px #1a1a1a inset;
+  -webkit-text-fill-color:var(--sand);
+  caret-color:#fff;
+}

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JoãoFlix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tema.css">
+<style>
+header{position:fixed;top:0;left:0;right:0;padding:14px 4%}
+main{padding-top:18vh;text-align:center}
+h1{font:900 clamp(44px,7vw,110px)/.9 var(--display);text-transform:uppercase;margin-bottom:48px;
+   background:linear-gradient(180deg,#fff 8%,#bdbdbd 55%,#6a6a6a 105%);
+   -webkit-background-clip:text;background-clip:text;color:transparent}
+#grade{display:flex;gap:2vw;justify-content:center;flex-wrap:wrap;padding:0 4%}
+
+.perfil{width:clamp(96px,11vw,170px);background:none;border:0;text-align:center;
+        color:#808080;transition:color .2s,transform .25s}
+.avatar{display:grid;place-items:center;aspect-ratio:1;border-radius:12px;
+        font:900 clamp(44px,5.5vw,88px)/1 var(--display);color:#fff;
+        text-shadow:0 2px 12px #000a;transition:box-shadow .25s}
+.nome{display:block;margin-top:12px;font-weight:800;font-size:clamp(14px,1.3vw,20px)}
+.perfil:hover,.perfil:focus-visible{color:#fff;transform:translateY(-6px) scale(1.03)}
+.perfil:hover .avatar,.perfil:focus-visible .avatar{box-shadow:0 18px 44px #ffffff33}
+.mais .avatar{background:#ffffff1a;border:1px solid #ffffff33}
+
+.tv main{zoom:1.25} .tv *{cursor:none} .kb .perfil:focus{outline:4px solid var(--teal)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><span class="logo">JOÃOFLIX</span></header>
+<main>
+  <h1>Quem está assistindo?</h1>
+  <div id="grade"></div>
+</main>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+const TV = /SMART-?TV|Tizen|Web0S|WebOS|Android TV|AFT|CrKey|BRAVIA|HbbTV|GoogleTV|NetCast|VIDAA|Roku/i.test(navigator.userAgent)
+  || /[?&]tv=1/.test(location.search);
+if (TV) { document.documentElement.classList.add('tv'); document.body.classList.add('kb'); }
+
+const auth = getAuth(initializeApp({ apiKey:'...', authDomain:'...', projectId:'...' }));
+await auth.authStateReady();
+if (!auth.currentUser) location.href = '/login.html';
+
+const TONS = ['#f2f2f2', '#d9d9d9', '#9a9a9a', '#6a6a6a', '#4a4a4a'];
+const MAX = 5, grade = document.getElementById('grade');
+
+async function api(url, opts = {}) {
+  const token = await auth.currentUser.getIdToken();
+  return (await fetch(url, { ...opts, headers: {
+    'Content-Type':'application/json', Authorization:`Bearer ${token}` } })).json();
+}
+
+// textContent (e não innerHTML): o nome do perfil é dado do usuário.
+function card(nome, letra, fundo, onclick, extra = '') {
+  const b = document.createElement('button');
+  b.className = 'perfil ' + extra;
+  b.innerHTML = '<span class="avatar"></span><span class="nome"></span>';
+  const [a, n] = b.children;
+  a.textContent = letra;
+  if (fundo) a.style.background = fundo;
+  n.textContent = nome;
+  b.onclick = onclick;
+  return b;
+}
+
+async function render() {
+  const perfis = await api('/api/profiles');
+  grade.replaceChildren(...perfis.map(p => card(
+    p.name, p.name[0].toUpperCase(), `linear-gradient(160deg,${p.avatar},#000)`,
+    () => { localStorage.setItem('perfilAtivo', p.id); location.href = '/'; }
+  )));
+  if (perfis.length < MAX) grade.append(card('Adicionar perfil', '+', null, adicionar, 'mais'));
+  if (document.body.classList.contains('kb')) grade.querySelector('button')?.focus();
+}
+
+async function adicionar() {
+  const name = prompt('Nome do perfil:')?.trim();
+  if (!name) return;
+  const kids = confirm('É um perfil infantil?');
+  const avatar = TONS[Math.floor(Math.random() * TONS.length)];
+  const r = await api('/api/profiles', { method:'POST', body: JSON.stringify({ name, avatar, kids }) });
+  if (r.error) alert(r.error);
+  render();
+}
+
+// Controle remoto: setas movem o foco entre os perfis.
+document.addEventListener('keydown', e => {
+  document.body.classList.add('kb');
+  const bs = [...grade.querySelectorAll('button')], i = bs.indexOf(document.activeElement);
+  if (e.key === 'ArrowRight') bs[Math.min(i + 1, bs.length - 1)]?.focus();
+  if (e.key === 'ArrowLeft')  bs[Math.max(i, 1) - 1]?.focus();
+});
+
+render();
+</script>
+</body>
+</html>
